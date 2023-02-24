@@ -1,0 +1,23 @@
+name: Snyk monitor scan
+on: push
+jobs:
+  install:
+    name: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@master
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          cache: "pip"
+      - name: Install pip
+        run: find . -name 'requirements.txt' -exec python3 -m pip install -r {} \;
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --command=python3 --all-projects --detection-depth=7
